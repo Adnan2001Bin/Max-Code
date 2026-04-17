@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 
+import { createSlug } from "@/lib/slug";
 import type { Surah } from "@/lib/types";
 
 interface Props {
@@ -37,8 +38,6 @@ export function SurahListAnimated({ surahs }: Props) {
 
   // ── Navigate with page transition ───────────────────
   function handleClick(surahNameEnglish: string) {
-    const slug = surahNameEnglish.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    
     // Create a full-screen overlay for the transition
     const overlay = document.createElement("div");
     overlay.className = "page-transition-overlay";
@@ -50,7 +49,7 @@ export function SurahListAnimated({ surahs }: Props) {
       duration: 0.4,
       ease: "power2.inOut",
       onComplete: () => {
-        router.push(`/surah/${slug}`);
+        router.push(`/surah/${createSlug(surahNameEnglish)}`);
         // Overlay cleaned up by the target page
         setTimeout(() => {
           if (document.body.contains(overlay)) {

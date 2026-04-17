@@ -20,3 +20,12 @@ export interface QuranDataset {
   surahs: Surah[];
   ayahsBySurah: Record<string, Ayah[]>;
 }
+
+export interface SearchResult {
+  surahId: number;
+  surahNameEnglish: string;
+  surahNameArabic: string;
+  ayahNumber: number;
+  textArabic: string;
+  textTranslation: string;
+}

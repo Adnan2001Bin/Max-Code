@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { SurahReader } from "@/components/reader/surah-reader";
-import { getAyahsBySurah, getSurahBySlug, getSurahs, createSlug } from "@/lib/quran-data";
+import { getAyahsBySurah, getSurahByRouteParam, getSurahs, createSlug } from "@/lib/quran-data";
 
 export const dynamicParams = true;
 
@@ -21,12 +21,15 @@ export async function generateStaticParams() {
 export default async function SurahPage({ params }: PageProps) {
   const routeParams = await params;
   const decodedSlug = decodeURIComponent(routeParams.slug);
-  const normalizedSlug = createSlug(decodedSlug);
-
-  const surah = await getSurahBySlug(normalizedSlug);
+  const surah = await getSurahByRouteParam(decodedSlug);
 
   if (!surah) {
     notFound();
+  }
+
+  const canonicalSlug = createSlug(surah.nameEnglish);
+  if (decodedSlug !== canonicalSlug) {
+    redirect(`/surah/${canonicalSlug}`);
   }
 
   const ayahs = await getAyahsBySurah(surah.id);

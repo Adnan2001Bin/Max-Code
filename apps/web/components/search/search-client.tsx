@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { createSlug } from "@/lib/slug";
 import { useSettings } from "@/components/settings/settings-provider";
 
 interface SearchResultItem {
@@ -14,14 +15,17 @@ interface SearchResultItem {
   textTranslation: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8787";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+const DEBOUNCE_DELAY_MS = 350;
 
 export function SearchClient() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { settings } = useSettings();
+  const requestSequenceRef = useRef(0);
 
   const arabicStyle = useMemo(
     () => ({
@@ -41,36 +45,82 @@ export function SearchClient() {
     [settings.translationFontSize],
   );
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const runSearch = useCallback(
+    async (trimmedQuery: string, signal?: AbortSignal) => {
+      const requestId = requestSequenceRef.current + 1;
+      requestSequenceRef.current = requestId;
+
+      setIsLoading(true);
+      setHasSearched(false);
+      setError(null);
+
+      try {
+        const endpoint = API_BASE_URL
+          ? `${API_BASE_URL}/search?q=${encodeURIComponent(trimmedQuery)}&limit=100`
+          : `/api/search?q=${encodeURIComponent(trimmedQuery)}&limit=100`;
+        const response = await fetch(endpoint, { signal });
+        if (!response.ok) {
+          throw new Error(`Search request failed (${response.status})`);
+        }
+
+        const payload = (await response.json()) as { results?: SearchResultItem[] };
+        if (requestSequenceRef.current === requestId) {
+          setResults(Array.isArray(payload.results) ? payload.results : []);
+          setHasSearched(true);
+        }
+      } catch (requestError) {
+        if (requestError instanceof DOMException && requestError.name === "AbortError") {
+          return;
+        }
+
+        console.error(requestError);
+        if (requestSequenceRef.current === requestId) {
+          setError("Unable to fetch search results right now. Please try again.");
+          setResults([]);
+          setHasSearched(true);
+        }
+      } finally {
+        if (requestSequenceRef.current === requestId) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults([]);
+      setError(null);
+      setIsLoading(false);
+      setHasSearched(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      void runSearch(trimmed, controller.signal);
+    }, DEBOUNCE_DELAY_MS);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [query, runSearch]);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = query.trim();
 
     if (!trimmed) {
       setResults([]);
       setError(null);
+      setHasSearched(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/search?q=${encodeURIComponent(trimmed)}&limit=100`,
-      );
-      if (!response.ok) {
-        throw new Error(`Search request failed (${response.status})`);
-      }
-
-      const payload = (await response.json()) as { results?: SearchResultItem[] };
-      setResults(Array.isArray(payload.results) ? payload.results : []);
-    } catch (requestError) {
-      console.error(requestError);
-      setError("Unable to fetch search results. Please make sure the API is running.");
-      setResults([]);
-    } finally {
-      setIsLoading(false);
-    }
+    void runSearch(trimmed);
   }
 
   return (
@@ -92,7 +142,7 @@ export function SearchClient() {
             color: "var(--text-secondary)",
           }}
         >
-          Search by translation text (Saheeh International).
+          Search by Surah name, Surah number, Ayah reference (e.g. 2:255), or translation text.
         </p>
       </div>
 
@@ -110,7 +160,7 @@ export function SearchClient() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="e.g. mercy, patience, guidance"
+            placeholder="e.g. al-faatiha, 2, 2:255, mercy"
             style={{
               flex: 1,
               minWidth: "200px",
@@ -138,6 +188,23 @@ export function SearchClient() {
       </form>
 
       {error ? <p style={{ marginTop: "16px", fontSize: "0.875rem", color: "#ef4444" }}>{error}</p> : null}
+      {isLoading ? (
+        <div
+          className="card-glass"
+          style={{
+            marginTop: "16px",
+            padding: "16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            color: "var(--text-secondary)",
+            fontSize: "0.9rem",
+          }}
+        >
+          <span className="loading-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
+          Searching ayahs...
+        </div>
+      ) : null}
 
       <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
         {results.map((result) => (
@@ -165,7 +232,7 @@ export function SearchClient() {
               <span>Ayah {result.ayahNumber}</span>
               <span>•</span>
               <Link
-                href={`/surah/${result.surahNameEnglish.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`}
+                href={`/surah/${createSlug(result.surahNameEnglish)}`}
                 style={{
                   color: "var(--text-secondary)",
                   textDecoration: "underline",
@@ -199,7 +266,7 @@ export function SearchClient() {
         ))}
       </div>
 
-      {!isLoading && query.trim() && !error && results.length === 0 ? (
+      {!isLoading && hasSearched && query.trim() && !error && results.length === 0 ? (
         <p style={{ marginTop: "24px", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
           No ayahs found for this search.
         </p>

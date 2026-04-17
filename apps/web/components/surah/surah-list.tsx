@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { createSlug } from "@/lib/slug";
 import type { Surah } from "@/lib/types";
 
 export function SurahList({ surahs }: { surahs: Surah[] }) {
@@ -14,7 +15,7 @@ export function SurahList({ surahs }: { surahs: Surah[] }) {
         {surahs.map((surah) => (
           <Link
             key={surah.id}
-            href={`/surah/${surah.id}`}
+            href={`/surah/${createSlug(surah.nameEnglish)}`}
             className="group rounded-xl border border-emerald-100 bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-4">

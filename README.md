@@ -39,3 +39,20 @@ npm run seed
 npm run dev:api
 npm run dev:web
 ```
+
+## Vercel deployment (web app)
+
+Deploy from the `apps/web` workspace so updates appear on the correct live project:
+
+```bash
+npm run deploy:vercel
+```
+
+If this is your first deploy on a machine, link the web workspace once first:
+
+```bash
+vercel link --cwd apps/web
+
+# or without global CLI:
+npx --yes vercel link --cwd apps/web
+```
