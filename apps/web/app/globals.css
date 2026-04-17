@@ -1,8 +1,42 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   Dark Premium Islamic Theme
+   ───────────────────────────────────────────── */
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --bg-deepest: #060a12;
+  --bg-deep: #0a0f1a;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.09);
+  --bg-glass: rgba(10, 15, 26, 0.85);
+
+  --gold: #d4a853;
+  --gold-light: #e8c97a;
+  --gold-dim: #a07c3a;
+  --gold-glow: rgba(212, 168, 83, 0.25);
+
+  --emerald: #10b981;
+  --emerald-dim: #065f46;
+  --emerald-glow: rgba(16, 185, 129, 0.2);
+
+  --text-primary: #f0ece5;
+  --text-secondary: #b8bcc5;
+  --text-muted: #8891a0;
+  --text-arabic: #f5edd6;
+
+  --border: rgba(212, 168, 83, 0.12);
+  --border-hover: rgba(212, 168, 83, 0.3);
+  --border-active: rgba(212, 168, 83, 0.5);
+
+  --shadow-gold: 0 0 30px rgba(212, 168, 83, 0.08);
+  --shadow-gold-hover: 0 0 40px rgba(212, 168, 83, 0.15);
+
+  --font-arabic-primary: var(--font-arabic-naskh), "Noto Naskh Arabic", serif;
+  --font-arabic-decorative: var(--font-arabic-amiri), "Amiri", serif;
+
+  --background: var(--bg-deepest);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
@@ -12,8 +46,268 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ── Base ──────────────────────────────────── */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--gold-dim);
+  border-radius: 3px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-deepest);
+  color: var(--text-primary);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Islamic geometric pattern overlay ─────── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image:
+    radial-gradient(circle at 25% 25%, var(--gold) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, var(--gold) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Glow keyframes ────────────────────────── */
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(212, 168, 83, 0.15), inset 0 0 20px rgba(212, 168, 83, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(212, 168, 83, 0.3), inset 0 0 30px rgba(212, 168, 83, 0.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowBorder {
+  0%, 100% {
+    border-color: rgba(212, 168, 83, 0.15);
+  }
+  50% {
+    border-color: rgba(212, 168, 83, 0.4);
+  }
+}
+
+/* ── Active ayah highlight ─────────────────── */
+
+.ayah-active {
+  animation: pulse-gold 2s ease-in-out infinite;
+  border-color: var(--gold) !important;
+  background: rgba(212, 168, 83, 0.08) !important;
+}
+
+.ayah-active .ayah-arabic {
+  color: var(--gold-light) !important;
+  text-shadow: 0 0 20px rgba(212, 168, 83, 0.3);
+}
+
+/* ── Card styles ───────────────────────────── */
+
+.card-glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glass:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-gold-hover);
+  transform: translateY(-2px);
+}
+
+/* ── Decorative divider ────────────────────── */
+
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.5;
+}
+
+.ornament-divider::before,
+.ornament-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-dim),
+    transparent
+  );
+}
+
+/* ── Bismillah styling ─────────────────────── */
+
+.bismillah {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--gold-light);
+  font-family: var(--font-arabic-decorative);
+  text-shadow: 0 0 30px rgba(212, 168, 83, 0.15);
+  padding: 1.5rem 0;
+}
+
+/* ── Page transition overlay ───────────────── */
+
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg-deepest);
+  pointer-events: none;
+}
+
+/* ── Audio player bar ──────────────────────── */
+
+.audio-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(10, 15, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px;
+}
+
+/* ── Intro overlay ─────────────────────────── */
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-deepest);
+}
+
+/* ── Surah badge ───────────────────────────── */
+
+.surah-badge {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.15), rgba(212, 168, 83, 0.05));
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  border-radius: 8px;
+  transform: rotate(45deg);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.surah-badge > span {
+  transform: rotate(-45deg);
+}
+
+/* ── Button styles ─────────────────────────── */
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--bg-deepest);
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 168, 83, 0.3);
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(212, 168, 83, 0.4);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+  color: var(--gold);
+  border-color: var(--border-hover);
+  background: var(--bg-card);
+}
+
+/* ── Loading spinner ───────────────────────── */
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin-slow 1s linear infinite;
 }

@@ -2,16 +2,44 @@ import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
-    <section className="rounded-xl border border-emerald-100 bg-white p-8 text-center shadow-sm">
-      <h1 className="text-2xl font-bold text-slate-900">Surah not found</h1>
-      <p className="mt-2 text-slate-600">
-        The requested page is unavailable. Please choose a Surah from the list.
-      </p>
-      <Link
-        href="/"
-        className="mt-5 inline-block rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+    <section
+      className="card-glass"
+      style={{
+        padding: "48px 32px",
+        textAlign: "center",
+        maxWidth: "500px",
+        margin: "40px auto",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "3rem",
+          color: "var(--gold-dim)",
+          marginBottom: "16px",
+        }}
       >
-        Back to Surah list
+        ✦
+      </div>
+      <h1
+        style={{
+          fontSize: "1.5rem",
+          fontWeight: 700,
+          color: "var(--text-primary)",
+        }}
+      >
+        Page not found
+      </h1>
+      <p
+        style={{
+          marginTop: "8px",
+          color: "var(--text-secondary)",
+          fontSize: "0.9rem",
+        }}
+      >
+        The requested Surah is unavailable. Please choose from the list.
+      </p>
+      <Link href="/" className="btn-gold" style={{ marginTop: "24px" }}>
+        Back to Surah List
       </Link>
     </section>
   );

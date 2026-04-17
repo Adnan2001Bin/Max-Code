@@ -3,7 +3,6 @@ import { Amiri, Geist, Geist_Mono, Noto_Naskh_Arabic } from "next/font/google";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { SettingsProvider } from "@/components/settings/settings-provider";
-import { SettingsSidebar } from "@/components/settings/settings-sidebar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,8 +28,9 @@ const arabicAmiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "Quran Reader",
-  description: "Responsive Quran reader with Surah list, ayahs, search, and reader settings.",
+  title: "Quran Reader — Immersive Quran Experience",
+  description:
+    "A beautifully animated Quran reader with 3D book opening, smooth transitions, and per-ayah audio recitation with live highlighting.",
 };
 
 export default function RootLayout({
@@ -41,12 +41,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${arabicNaskh.variable} ${arabicAmiri.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${arabicNaskh.variable} ${arabicAmiri.variable} antialiased`}
+      style={{ background: "#060a12" }}
     >
-      <body className="min-h-full flex flex-col">
+      <body
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          background: "#060a12",
+        }}
+      >
         <SettingsProvider>
           <AppShell>{children}</AppShell>
-          <SettingsSidebar />
         </SettingsProvider>
       </body>
     </html>

@@ -40,9 +40,21 @@ export async function getSurahs(): Promise<Surah[]> {
   return dataset.surahs;
 }
 
+export function createSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export async function getSurahById(surahId: number): Promise<Surah | undefined> {
   const surahs = await getSurahs();
   return surahs.find((surah) => surah.id === surahId);
+}
+
+export async function getSurahBySlug(slug: string): Promise<Surah | undefined> {
+  const surahs = await getSurahs();
+  return surahs.find((surah) => createSlug(surah.nameEnglish) === slug);
 }
 
 export async function getAyahsBySurah(surahId: number): Promise<Ayah[]> {

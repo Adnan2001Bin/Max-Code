@@ -1,24 +1,122 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-emerald-100 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="text-lg font-semibold tracking-tight text-emerald-800">
-            Quran Reader
+    <div
+      style={{
+        minHeight: "100vh",
+        position: "relative",
+        zIndex: 1,
+      }}
+    >
+      {/* ── Header ──────────────────────────────────── */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 30,
+          borderBottom: "1px solid var(--border)",
+          background: "rgba(6, 10, 18, 0.85)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1152px",
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "14px 24px",
+          }}
+        >
+          {/* Logo */}
+          <Link
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              textDecoration: "none",
+            }}
+          >
+            {/* Decorative Islamic star */}
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                background:
+                  "linear-gradient(135deg, rgba(212,168,83,0.2), rgba(212,168,83,0.05))",
+                border: "1px solid rgba(212,168,83,0.3)",
+                color: "var(--gold)",
+                fontSize: "1rem",
+              }}
+            >
+              ✦
+            </span>
+            <span
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                color: "var(--gold)",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Quran Reader
+            </span>
           </Link>
-          <nav className="flex items-center gap-2 text-sm sm:gap-3">
+
+          {/* Nav */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <Link
               href="/"
-              className="rounded-md px-3 py-2 text-slate-700 transition hover:bg-emerald-100 hover:text-emerald-900"
+              style={{
+                padding: "8px 16px",
+                borderRadius: "8px",
+                fontSize: "0.85rem",
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--gold)";
+                e.currentTarget.style.background = "var(--bg-card)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.background = "transparent";
+              }}
             >
               Surahs
             </Link>
             <Link
               href="/search"
-              className="rounded-md px-3 py-2 text-slate-700 transition hover:bg-emerald-100 hover:text-emerald-900"
+              style={{
+                padding: "8px 16px",
+                borderRadius: "8px",
+                fontSize: "0.85rem",
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--gold)";
+                e.currentTarget.style.background = "var(--bg-card)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.background = "transparent";
+              }}
             >
               Search
             </Link>
@@ -26,7 +124,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      {/* ── Main content ────────────────────────────── */}
+      <main
+        style={{
+          maxWidth: "1152px",
+          margin: "0 auto",
+          padding: "24px 24px 48px",
+        }}
+      >
+        {children}
+      </main>
     </div>
   );
 }
