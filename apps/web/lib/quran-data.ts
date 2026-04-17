@@ -6,7 +6,7 @@ import { cache } from "react";
 
 import type { Ayah, QuranDataset, Surah } from "./types";
 
-const DATA_FILE = path.join(process.cwd(), "..", "api", "data", "quran.en-sahih.json");
+const DATA_FILE = path.join(process.cwd(), "data", "quran.en-sahih.json");
 
 function isDataset(value: unknown): value is QuranDataset {
   if (!value || typeof value !== "object") {
